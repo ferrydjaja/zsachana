@@ -1,0 +1,57 @@
+<html>
+  <title>Realtime IoT</title>
+  <body>
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+		function bindEvent(element, eventName, eventHandler) {
+            if (element.addEventListener){
+                element.addEventListener(eventName, eventHandler, false);
+            } else if (element.attachEvent) {
+                element.attachEvent('on' + eventName, eventHandler);
+            }
+        }
+        
+        var wssurl = 'wss://microbitsg.herokuapp.com';
+        var socket = new WebSocket(wssurl);
+        
+        var iframeSource = 'https://pfizer-test.us10.sapanalytics.cloud/sap/fpa/ui/tenants/1c966/bo/application/C9DB22EDEE3DF7BFAEDD6A0820D188D2?mode=embed';
+        // Create the iframe
+        var iframe = document.createElement('iframe');
+        iframe.setAttribute('src', iframeSource);
+        iframe.setAttribute('id', 'the_iframe');
+        iframe.setAttribute('frameborder', 0);
+        iframe.setAttribute('style', 'overflow: hidden; height: 100%; width: 100%; position: absolute;');
+        
+        //iframe.setAttribute('style', 'overflow: hidden; height: 450px; width: 200px; position: absolute;');
+        //iframe.style.width = 450 + 'px';
+        //iframe.style.height = 200 + 'px';
+        document.body.appendChild(iframe);
+        
+        // Send a message to the child iframe
+        
+        var iframeEl = document.getElementById('the_iframe');
+        // Send a message to the child iframe
+        var sendMessage = function(msg) {
+            // Make sure you are sending a string, and to stringify JSON
+            iframeEl.contentWindow.postMessage(msg, '*');
+        };
+        
+        
+        // Listen to message from child window
+        bindEvent(window, 'message', function (e) {
+            //results.innerHTML = e.data;
+            console.log(e.data);
+            console.log(e.data.split(":").length);
+        });
+        
+        socket.onmessage = function (message) {
+			console.log(message);
+			sendMessage("1");
+        };
+        socket.onerror = function (error) {
+            console.log('WebSocket error: ' + error);
+        };
+	</script>
+  </body>
+</html>

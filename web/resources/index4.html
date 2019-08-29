@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Counter</title>
+ </head>
+ <body>
+ <script>
+    let wssurl = 'wss://microbitsg.herokuapp.com';
+
+	let socket = new WebSocket(wssurl);
+	socket.onopen = function () {
+                        socket.send("Hello Apa");
+                    };
+
+            socket.onmessage = function (message) {
+				console.log(message);
+                let clientname = message.data.split('|')[0];
+                let msg = message.data.split('|')[1];
+                
+                    //sendCommand(msg);
+                
+            };
+            socket.onerror = function (error) {
+                console.log('WebSocket error: ' + error);
+            };
+ </script>
+  Ok
+ </body>
+</html>

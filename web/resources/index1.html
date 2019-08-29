@@ -1,0 +1,92 @@
+<html>
+  <title>Pfizer ChatBot</title>
+  <body>
+  	<h1>Parent Window</h1>
+    <p>Send Message: <button id="message_button">Hi there iframe</button></p>
+    <p>Got Message:</p>
+    <div id="results"></div>
+    <br/>
+    
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+		function bindEvent(element, eventName, eventHandler) {
+            if (element.addEventListener){
+                element.addEventListener(eventName, eventHandler, false);
+            } else if (element.attachEvent) {
+                element.attachEvent('on' + eventName, eventHandler);
+            }
+        }
+        
+        var iframeSource = 'https://pfizer-test.us10.sapanalytics.cloud/sap/fpa/ui/tenants/1c966/bo/application/CECB1AE9887E9E3CA0BD7822A6BD1543?mode=embed';
+        // Create the iframe
+        var iframe = document.createElement('iframe');
+        iframe.setAttribute('src', iframeSource);
+        iframe.setAttribute('id', 'the_iframe');
+        //iframe.setAttribute('frameborder', 0);
+        //iframe.setAttribute('style', 'overflow: hidden; height: 100%; width: 100%; position: absolute;');
+        //iframe.setAttribute('style', 'overflow: hidden; height: 450px; width: 200px; position: absolute;');
+        iframe.style.width = 450 + 'px';
+        iframe.style.height = 200 + 'px';
+        document.body.appendChild(iframe);
+        
+        // Send a message to the child iframe
+        
+        var iframeEl = document.getElementById('the_iframe'),
+            messageButton = document.getElementById('message_button'),
+            results = document.getElementById('results');
+        // Send a message to the child iframe
+        var sendMessage = function(msg) {
+            // Make sure you are sending a string, and to stringify JSON
+            iframeEl.contentWindow.postMessage(msg, '*');
+        };
+        // Send random messge data on every button click
+        bindEvent(messageButton, 'click', function (e) {
+            var random = Math.random();
+            sendMessage('' + random);
+        });
+        
+        
+        // Listen to message from child window
+        bindEvent(window, 'message', function (e) {
+            //results.innerHTML = e.data;
+            console.log(e.data);
+            console.log(e.data.split(":").length);
+            
+            if(e.data.split(":").length === 2) {
+            	var id = e.data.split(":")[0];
+            	var data = e.data.split(":")[1];
+            	
+            	var _data = {
+                    "message": {
+                        "type": "text",
+                        "content": "show destination status AT08"
+                    },
+                    "conversation_id": "test-1533969037613",
+                    "log_level": "info"
+                };
+            	
+	            $.ajax({
+	                url: 'https://api.cai.tools.sap/build/v1/dialog',
+	                cache: false,
+	                type: 'POST',
+	                headers: {
+			        	'Authorization':'Token 01ebc921d0593dd7d97cef75dc606138',
+			        	'Content-Type':'application/json'
+			    	},
+	                data: JSON.stringify(_data),
+					async: true,
+	                success: function( data, textStatus, jQxhr ){
+	                   console.log( data );
+	                   console.log(data.results.messages[0].content);
+	                   sendMessage(data.results.messages[0].content);
+	                },
+	                error: function( jqXhr, textStatus, errorThrown ){
+	                    console.log( errorThrown );
+	                }
+	            });
+	            
+            }
+        });
+	</script>
+  </body>
+</html>

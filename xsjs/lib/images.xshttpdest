@@ -1,0 +1,8 @@
+host = "api.cai.tools.sap";
+port = 443;
+pathPrefix = "/build/v1/dialog";
+proxyHost = "proxy";
+proxyPort = 8080;
+authType = none;
+useSSL = true;
+timeout = 0;
